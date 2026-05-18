@@ -127,3 +127,27 @@ def test_unauth_returns_1002(client):
     """未带 token 调用受保护接口"""
     r = _get(client, "/api/user/profile")
     assert r.get_json()["code"] == 1002
+
+
+
+  def test_item_list_filters_offline_items(client):
+      """商品列表只展示在售商品，已下架商品不应出现"""
+      # 用 stu002 登录（他是种子商品中前两件的卖家）
+      r = _post(client, "/api/user/login",
+                {"username": "stu002", "password": "123456"})
+      token = r.get_json()["data"]["token"]
+
+      # 先获取商品列表，拿第一件商品
+      r = _post(client, "/api/item/list", {"page": 1, "size": 50})
+      items = r.get_json()["data"]["records"]
+      target = items[0]
+
+      # 下架这件商品
+      _post(client, f"/api/item/offline/{target['id']}", token=token)
+
+      # 再次查询列表，下架商品不应该出现
+      r = _post(client, "/api/item/list", {"page": 1, "size": 50})
+      after_ids = {item["id"] for item in r.get_json()["data"]["records"]}
+
+      assert target["id"] not in after_ids, \
+          f"BUG: 已下架的商品 id={target['id']} 仍然出现在列表中！"
