@@ -97,7 +97,7 @@ def list_items():
     data = request.get_json(silent=True) or {}
     page = max(int(data.get("page") or 1), 1)
     size = min(max(int(data.get("size") or 12), 1), 50)
-    q = Item.query
+    q = Item.query.filter(Item.status == 1)
     if data.get("categoryId"):
         q = q.filter(Item.category_id == int(data["categoryId"]))
     kw = (data.get("keyword") or "").strip()
