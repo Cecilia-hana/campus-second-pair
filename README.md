@@ -80,3 +80,32 @@ campus-second/
 * **SQLite 文件位置**: 默认在 `backend/campus_second.db`,若需要重置只需删除该文件,下次启动会重新建表 + 写种子数据。
 * **上传图片 413**: 后端 `MAX_UPLOAD_SIZE` 默认 5 MB,可在 `app/config.py` 中调整;若使用 Nginx 反代,需同步设置 `client_max_body_size`。
 * **WebSocket 连不上**: 检查 Vite 代理 `ws: true` 是否生效,生产环境 Nginx `location /ws/` 需要加 `proxy_http_version 1.1; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection "upgrade";`
+
+
+## 三、核心功能演示
+
+本项目实现了从商品发布、浏览、下单到沟通的完整闭环，以下为核心界面的操作演示：
+
+### 1. 商品市集与检索
+支持商品瀑布流展示，提供按分类过滤与关键字模糊搜索功能，前端适配了分页器。
+![系统首页](doc/home.png)
+
+### 2. 账号登录与注册
+系统内置了不同角色的测试账号。登录表单采用 JWT 鉴权，并对用户输入进行了严格的格式校验。
+![用户登录](doc/login.png)
+
+### 3. 商品详情与交互
+展示商品的详细参数与富文本描述。买家可在此处调整购买数量，并直接发起"立即购买"或"私信卖家"。
+![商品详情](doc/item_detail.png)
+
+### 4. 二手商品发布
+支持卖家快捷发布闲置物品。前后端协同实现了图片上传验证（限制大小与格式），图片自动回显。
+![发布商品](doc/publish.png)
+
+### 5. 订单状态追踪
+订单管理面板，买卖双方可在此跟踪交易（待支付、已发货、已完成等），执行防超卖验证下的状态机操作。
+![订单管理](doc/order_list.png)
+
+### 6. Socket.IO 实时私信
+基于双向实时通信机制实现的站内聊天室。支持买卖双方实时议价沟通，并带有未读消息红点推送提醒。
+![私信聊天](doc/chat.png)
